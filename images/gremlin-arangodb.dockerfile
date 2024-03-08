@@ -35,9 +35,11 @@ RUN apt-get update && \
         curl \
         bash \
     && \
+    wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1_amd64.deb && \
+    apt-get install ./multiarch-support_2.27-3ubuntu1_amd64.deb && \
     dpkg -i ${LIBSSL_DEB} && \
     rm -f ${LIBSSL_DEB} && \
-    dpkg -i ${ARANGO_PACKAGE} && \
+    dpkg -i  ${ARANGO_PACKAGE} && \
     sed -ri \
         -e 's!127\.0\.0\.1!0.0.0.0!g' \
         -e 's!^(file\s*=).*!\1 -!' \

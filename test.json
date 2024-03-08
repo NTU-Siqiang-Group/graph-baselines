@@ -1,0 +1,8 @@
+{
+  "datasets": [
+     "freebase_small.json2"
+  ],
+   "queries": [
+      "get-and-add.groovy"
+  ]
+}

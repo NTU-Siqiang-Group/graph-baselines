@@ -1,4 +1,4 @@
-FROM  openjdk:8
+FROM ubuntu:20.04
 LABEL authors="Brugnara <mb@disi.unitn.eu>, Matteo Lissandrini <ml@disi.unitn.eu>"
 
 # RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys CD8CB0F1E0AD5B52E93F41E7EA93F5E56E751E9B B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 7FCC7D46ACCC4CF8
@@ -6,7 +6,7 @@ LABEL authors="Brugnara <mb@disi.unitn.eu>, Matteo Lissandrini <ml@disi.unitn.eu
 ENV GREMLIN3_TAG 3.2.9
 ENV GREMLIN3_HOME /opt/gremlin
 ENV PATH /opt/gremlin/bin:$PATH
-
+ENV DEBIAN_FRONTEND=noninteractive 
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -21,13 +21,17 @@ RUN apt-get update && \
         golang \
         curl \
         bash \
-        maven \
         ant \
         git-core \
         locales \
         wget \
-        sudo
+        sudo \
+        gnupg \
+        maven \
+        openjdk-8-jdk
 
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1_amd64.deb && \
+    apt-get install ./multiarch-support_2.27-3ubuntu1_amd64.deb
 
 # --> fixing missing libssl1.0.0
 ENV LIBSSL_DEB libssl1.0.0_1.0.1t-1+deb7u4_amd64.deb
@@ -51,16 +55,16 @@ ENV LANG en_US.utf8
 
 ENV PG_MAJOR 9.6
 #ENV PG_VERSION 9.6.3-1.pgdg80+1
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list && \
+    wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - 
 
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
-
-RUN apt-get update \
-
-    && apt-get install -y --allow-unauthenticated postgresql-common \
-    && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
-    && apt-get install -y --allow-unauthenticated \
+RUN apt-get update --allow-unauthenticated \
+    && apt-get install -y --allow-unauthenticated --no-install-recommends postgresql-common \
+    && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
+RUN apt-get install -y --allow-unauthenticated --no-install-recommends \
         postgresql-$PG_MAJOR \
         postgresql-contrib-$PG_MAJOR \
+        python2 \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -83,6 +87,11 @@ RUN mkdir -p /var/run/postgresql \
 ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+RUN mvn dependency:get -Dartifact=org.umlg:sqlg-postgres-dialect:1.3.3
+RUN mvn dependency:get -Dartifact=org.umlg:sqlg-postgres:1.3.3
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+RUN ln -sf $JAVA_HOME/bin/java /usr/bin/java
 
 # (We need to commit the data)
 # VOLUME /var/lib/postgresql/data

@@ -1,4 +1,4 @@
-FROM  openjdk:8
+FROM maven:3.6.3-openjdk-8
 LABEL authors="Brugnara <mb@disi.unitn.eu>, Matteo Lissandrini <ml@disi.unitn.eu>, Nolan Nichols <nolan.nichols@gmail.com>"
 
 ENV GREMLIN3_TAG 3.2.9
@@ -7,6 +7,8 @@ ENV PATH /opt/gremlin/bin:$PATH
 
 ADD libs/apache-tinkerpop-gremlin-console-${GREMLIN3_TAG}-bin.tgz /opt
 RUN ln -s /opt/apache-tinkerpop-gremlin-console-${GREMLIN3_TAG} ${GREMLIN3_HOME}
+RUN mvn dependency:get -Dartifact=org.apache.tinkerpop:neo4j-gremlin:3.2.3
+RUN mvn dependency:get -Dartifact=org.neo4j:neo4j-tinkerpop-api-impl:0.3-2.3.3
 
 WORKDIR /tmp
 COPY extra/dot_groovy /root/.groovy

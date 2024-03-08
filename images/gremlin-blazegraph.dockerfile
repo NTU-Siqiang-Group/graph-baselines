@@ -1,4 +1,4 @@
-FROM  openjdk:8
+FROM maven:3.6.3-openjdk-8
 LABEL authors="Brugnara <mb@disi.unitn.eu>, Matteo Lissandrini <ml@disi.unitn.eu>, Nolan Nichols <nolan.nichols@gmail.com>"
 
 ENV BLAZE_VERSION 2_1_4
@@ -14,6 +14,8 @@ ENV PATH /opt/gremlin/bin:$PATH
 
 ADD libs/apache-tinkerpop-gremlin-console-${GREMLIN3_TAG}-bin.tgz /opt
 RUN ln -s /opt/apache-tinkerpop-gremlin-console-${GREMLIN3_TAG} ${GREMLIN3_HOME}
+RUN mvn dependency:get -Dartifact=com.blazegraph:blazegraph-gremlin:1.0.0
+RUN mvn dependency:get -Dartifact=org.slf4j:slf4j-api:1.7.12
 
 ADD libs/gremlin-groovy-${GREMLIN2_TAG}.tgz /opt
 RUN mv /opt/gremlin-groovy-${GREMLIN2_TAG}/bin/gremlin.sh  /opt/gremlin-groovy-${GREMLIN2_TAG}/bin/gremlin2.sh && \

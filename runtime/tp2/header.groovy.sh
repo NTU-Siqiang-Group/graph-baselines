@@ -22,7 +22,7 @@ imports=(
 declare -A commands
 commands=(
     ["gremlin-neo4j"]='def conf = ["node_cache_size":"1M","relationship_cache_size":"1M"]; g=new Neo4jGraph(DB_FILE, conf)'
-    ["gremlin-orientdb"]='g = new OrientGraph("plocal:" + DB_FILE)'
+    ["gremlin-orientdb"]='g = new OrientGraph("PLOCAL:" + DB_FILE)'
     ["gremlin-sparksee"]='g = new SparkseeGraph(DB_FILE, "/runtime/confs/sparksee.cfg")'
     ["gremlin-titan"]='def TITAN_PROPERTIES=System.env.get("TITAN_PROPERTIES"); g=TitanFactory.open(TITAN_PROPERTIES);'
     ["gremlin-arangodb"]='g=new ArangoDBGraph("localhost", 8529, "myDB", "V", "E")'
