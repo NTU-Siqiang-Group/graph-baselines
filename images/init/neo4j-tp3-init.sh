@@ -7,7 +7,7 @@ IFS=$'\n\t'
 if [[ -z ${JAVA_OPTIONS+x} ]]; then
 
    echo "WARN: NO JAVA_OPTIONS SET TO NEO4J TP3 - SETTING DEFAULT"
-   export JAVA_OPTIONS='-Xms4g -Xmn128M -Xmx120g'
+   export JAVA_OPTIONS='-Xms200g -Xmn128M -Xmx500g'
 
 fi
 

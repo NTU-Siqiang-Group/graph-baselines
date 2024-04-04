@@ -19,8 +19,8 @@ WORKDIR /tmp
 
 RUN mkdir -p /opt
 RUN cd /tmp \
-    && wget https://disi.unitn.it/~brugnara/data/pkg/titan-${TITAN_VERSION}-hadoop2.zip \
-    && wget https://disi.unitn.it/~brugnara/data/pkg/titan-${TITAN_VERSION}-hadoop2.zip.md5 \
+    && wget --no-check-certificate https://disi.unitn.it/~brugnara/data/pkg/titan-${TITAN_VERSION}-hadoop2.zip \
+    && wget --no-check-certificate https://disi.unitn.it/~brugnara/data/pkg/titan-${TITAN_VERSION}-hadoop2.zip.md5 \
     && md5sum -c titan-${TITAN_VERSION}-hadoop2.zip.md5 \
     && unzip -q titan-${TITAN_VERSION}-hadoop2.zip -d /opt \
     && rm /tmp/*hadoop*

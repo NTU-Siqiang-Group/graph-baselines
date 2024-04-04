@@ -8,7 +8,7 @@ tl = "new-edge";
 p = g.V;
 println(g);
 
-for (int i = 0; i < 100; i++) {
+for (int i = 0; i < 2000; i++) {
   if (i % 2 == 0) {
     cur = p.next();
     v1 = g.v(cur.id);

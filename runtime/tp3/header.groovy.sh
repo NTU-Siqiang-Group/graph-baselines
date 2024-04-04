@@ -21,6 +21,7 @@ imports=(
     ["neo4j-tp3"]=''
     ["titan-tp3"]='import com.thinkaurelius.titan.core.TitanFactory; import org.apache.log4j.*; SugarLoader.load() '
     ["janus-tp3"]='org.apache.tinkerpop.gremlin.groovy.loaders.SugarLoader.load();'
+    ["janusgraph"]=':remote connect tinkerpop.server conf/remote.yaml session; :remote console;'
 )
 
 # Commands should be common -> DATABASE
@@ -36,6 +37,7 @@ commands=(
     ["gremlin-titan-tp3"]='LogManager.getRootLogger().setLevel(Level.WARN); TITAN_PROPERTIES=System.env.get("TITAN_PROPERTIES"); graph=TitanFactory.open(TITAN_PROPERTIES); g = graph.traversal()'
     ["gremlin-janus-tp3"]='LogManager.getRootLogger().setLevel(Level.WARN); JANUS_PROPERTIES=System.env.get("JANUS_PROPERTIES"); graph=JanusGraphFactory.open(JANUS_PROPERTIES); g = graph.traversal()'
     ["gremlin-pg"]='graph = SqlgGraph.open("/runtime/confs/sqlg.properties"); g = graph.traversal();'
+    ["gremlin-janusgraph"]='g = graph.traversal();'
 )
 
 if [[ -v DEBUG ]]; then
@@ -185,7 +187,7 @@ RAND_ARRAY = f.get_random_array(N, ITERATION.toInteger())
 
 
 // depends on DATASET
-lids_file = new File(System.env.get('LIDS_FILE')) // dataset, database
+//lids_file = new File(System.env.get('LIDS_FILE')) // dataset, database
 
 jparser  = new JsonSlurper();
 EOF
@@ -195,25 +197,25 @@ EOF
 if [[ "$QUERY" != *loader.groovy ]] && [[ "$QUERY" != *sampler.groovy ]]; then
 cat<<EOF
 
-lidm = [:]
-System.err.println(lids_file)
-if (!lids_file.exists()) {
-    System.err.println("LID File not Found! You need to re-run the sampler");
-    System.exit(2);
-}
+//lidm = [:]
+//System.err.println(lids_file)
+//if (!lids_file.exists()) {
+//    System.err.println("LID File not Found! You need to re-run the sampler");
+//    System.exit(2);
+//}
 
 
-System.err.println("Loading LID")
-lidm = jparser.parseText(lids_file.text)
+//System.err.println("Loading LID")
+//lidm = jparser.parseText(lids_file.text)
 
 
-NODE_ARRAY = lidm.nodes
-EDGE_ARRAY = lidm.edges
-LABEL_ARRAY = lidm.labels
+//NODE_ARRAY = lidm.nodes
+//EDGE_ARRAY = lidm.edges
+//LABEL_ARRAY = lidm.labels
 
-NODE_LID_ARRAY = lidm.nodes_lid
-EDGE_LID_ARRAY = lidm.edges_lid
-SKIP_COMMIT = lidm.commit
+//NODE_LID_ARRAY = lidm.nodes_lid
+//EDGE_LID_ARRAY = lidm.edges_lid
+//SKIP_COMMIT = lidm.commit
 
 EOF
 

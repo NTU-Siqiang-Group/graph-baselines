@@ -8,10 +8,64 @@
 def DATASET_FILE = System.env.get("DATASET")
 def DEBUG = System.env.get("DEBUG") != null
 
+def loadTxtGraph(filename, graphToWrite) {
+    nsToS = 1000000000;
+    System.err.println("loading txt: ${filename}");
+    def vs = [];
+    t1 = System.nanoTime();
+    totalVertices = 41652230;
+    // totalVertices = 20000000;
+    for (int i = 0; i < totalVertices; i++) {
+        vs.add(graphToWrite.addVertex("vertex") as Vertex);
+        if (i % 1000000 == 0) {
+            graphToWrite.commit();
+            t2 = System.nanoTime();
+            System.err.println("loaded ${i} vertices, spend time: ${(t2 - t1) / nsToS} s");
+        }
+    }
+    try {
+        System.err.println("prepare to commit");
+        graphToWrite.commit();
+        t2 = System.nanoTime();
+    } catch (MissingMethodException e) {
+        // do nothing..
+    }
+    System.err.println("loaded all vertices, spend time: ${(t2 - t1) / nsToS} s");
+    is = new FileReader(filename);
+    reader = new BufferedReader(is);
+    idx = 0;
+    try {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            // System.err.println(line);
+            String[] evs = line.split(" ");
+            idx1 = evs[0].toInteger();
+            idx2 = evs[1].toInteger();
+            vs[idx1].addEdge("edge", vs[idx2]);
+            idx += 1;
+            if (idx % 1000000 == 0) {
+                try {
+                    graphToWrite.commit();
+                } catch (MissingMethodException e) {
+                    // do nothing
+                }
+                t2 = System.nanoTime();
+                System.err.println("loaded ${idx} edges, spend time: ${(t2 - t1) / nsToS} s");
+            }
+        }
+        t2 = System.nanoTime();
+        System.err.println("loaded all edges, spend time: ${(t2 - t1) / nsToS} s")
+    } finally {
+        is.close();
+    }
+}
+
 def stime = System.currentTimeMillis()
 if (DATASET_FILE.endsWith('.xml'))
     g.loadGraphML(DATASET_FILE)
-else {
+else if (DATASET_FILE.contains('twitter-2010') || DATASET_FILE.contains('fake')) {
+    loadTxtGraph(DATASET_FILE, g)
+} else {
     System.err.println("Start loading")
     g.loadGraphSON(DATASET_FILE)
     System.err.println("End loading")

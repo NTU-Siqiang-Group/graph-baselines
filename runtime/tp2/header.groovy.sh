@@ -187,24 +187,24 @@ EOF
 if [[ "$QUERY" != *loader.groovy ]] && [[ "$QUERY" != *sampler.groovy ]]; then
 cat<<EOF
 
-def lidm = [:]
+//def lidm = [:]
 //System.err.println(lids_file)
-if (!lids_file.exists()) {
-    System.err.println("LID File not Found! You need to re-run the sampler");
-    System.exit(2);
-}
+//if (!lids_file.exists()) {
+//    System.err.println("LID File not Found! You need to re-run the sampler");
+//    System.exit(2);
+//}
 
 
-System.err.println("Loading LID")
-lidm = jparser.parseText(lids_file.text)
+//System.err.println("Loading LID")
+//lidm = jparser.parseText(lids_file.text)
 
-NODE_ARRAY = lidm.nodes
-EDGE_ARRAY = lidm.edges
-LABEL_ARRAY = lidm.labels
+//NODE_ARRAY = lidm.nodes
+//EDGE_ARRAY = lidm.edges
+//LABEL_ARRAY = lidm.labels
 
-NODE_LID_ARRAY = lidm.nodes_lid
-EDGE_LID_ARRAY = lidm.edges_lid
-SKIP_COMMIT = lidm.commit
+//NODE_LID_ARRAY = lidm.nodes_lid
+//EDGE_LID_ARRAY = lidm.edges_lid
+//SKIP_COMMIT = lidm.commit
 
 // -----------------------------------------------------------------------------
 

@@ -5,8 +5,61 @@
 //   via graph object _g_ provided by header.groovy
 //  Maintainer: Lissandrini
 
-DEBUG = System.env.get("DEBUG") != null
 
+def loadTxtGraph(filename, graphToWrite) {
+    nsToS = 1000000000;
+    System.err.println("loading txt: ${filename}");
+    def vs = [];
+    t1 = System.nanoTime();
+    totalVertices = 41652230;
+    // totalVertices = 20000000;
+    for (int i = 0; i < totalVertices; i++) {
+        vs.add(graphToWrite.addVertex("vertex") as Vertex);
+        if (i % 1000000 == 0) {
+            graphToWrite.tx().commit();
+            t2 = System.nanoTime();
+            System.err.println("loaded ${i} vertices, spend time: ${(t2 - t1) / nsToS} s");
+        }
+    }
+    try {
+        System.err.println("prepare to commit");
+        graphToWrite.tx().commit();
+        t2 = System.nanoTime();
+    } catch (MissingMethodException e) {
+        // do nothing..
+    }
+    System.err.println("loaded all vertices, spend time: ${(t2 - t1) / nsToS} s");
+    is = new FileReader(filename);
+    reader = new BufferedReader(is);
+    idx = 0;
+    try {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            // System.err.println(line);
+            String[] evs = line.split(" ");
+            idx1 = evs[0].toInteger();
+            idx2 = evs[1].toInteger();
+            vs[idx1].addEdge("edge", vs[idx2]);
+            idx += 1;
+            if (idx % 1000000 == 0) {
+                try {
+                    graphToWrite.tx().commit();
+                } catch (MissingMethodException e) {
+                    // do nothing
+                }
+                t2 = System.nanoTime();
+                System.err.println("loaded ${idx} edges, spend time: ${(t2 - t1) / nsToS} s");
+            }
+        }
+        t2 = System.nanoTime();
+        System.err.println("loaded all edges, spend time: ${(t2 - t1) / nsToS} s")
+    } finally {
+        is.close();
+    }
+}
+
+DEBUG = System.env.get("DEBUG") != null
+System.err.println(DATASET)
 System.err.println("Start loading");
 stime = System.currentTimeMillis();
 try{
@@ -15,6 +68,8 @@ try{
 
     if (DATASET.endsWith('.xml')) {
         g.loadGraphML(DATASET);
+    } else if (DATASET.endsWith('twitter-2010.json3') || DATASET.endsWith('fake.json3')) {
+        loadTxtGraph(DATASET, graph);
     } else if (DATASET.endsWith('.json3')) {
         final InputStream is = new FileInputStream(DATASET)
         final GraphSONMapper mapper = graph.io(IoCore.graphson()).mapper().create()
@@ -35,12 +90,14 @@ try{
         }
     }
 
-
+    t1 = System.nanoTime()
     try {
         graph.tx().commit();
     } catch (MissingMethodException e) {
         System.err.println("Does not support g.tx().commit(). Ignoring.");
     }
+    t2 = System.nanoTime();
+    System.err.println("commit time: ${(t2 - t1) / 1000000000} s");
 
 #BLAZEgraph.setBulkLoad(false);
 
@@ -79,3 +136,5 @@ if (DEBUG) {
     System.err.println(" ########################################## DEBUG ");
 
 }
+t2 = System.nanoTime();
+System.err.println("stats finished time: ${(t2 - t1) / 1000000000} s");

@@ -33,7 +33,7 @@ if [[ "$QUERY" == *loader.groovy ]]; then
     echo "Native Loading already took place"
   fi
 
-  grep -v '^#' sampler.groovy >> /tmp/query
+  # grep -v '^#' sampler.groovy >> /tmp/query
   [[ "$DATABASE" == *blazegraph ]] || echo "graph.close()" >> /tmp/query
 
 elif [[ "$QUERY" == *index*.groovy ]]  && ! [[ -z ${INDEX_QUERY_PREFIX+x}  ]]  ; then
