@@ -69,6 +69,7 @@ DATABASES = [
     'pg',           # NOTE: it uses its own loader (@see README).
     # leave as last
     '2to3',         # Only for conversion
+    'janusgraph'
 ]
 IMAGES = [
     'dbtrento/gremlin-neo4j',
@@ -82,6 +83,7 @@ IMAGES = [
     'dbtrento/gremlin-janus-tp3',
     'dbtrento/gremlin-pg',
     'dbtrento/gremlin-2to3',
+    'dbtrento/gremlin-janusgraph'
 ]
 assert len(DATABASES) == len(IMAGES)
 

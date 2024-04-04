@@ -56,3 +56,4 @@ collected
 vldb19_sleepy.sh
 
 .vscode/
+runtime/*.log

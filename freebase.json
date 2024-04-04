@@ -1,6 +1,6 @@
 {
   "datasets": [
-     "freebase_small.json2"
+     "freebase_large.json2"
   ],
    "queries": [
       "get-and-add.groovy"

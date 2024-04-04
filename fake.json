@@ -1,0 +1,8 @@
+{
+  "datasets": [
+     "fake.json3"
+  ],
+   "queries": [
+      "get-and-add.groovy"
+  ]
+}

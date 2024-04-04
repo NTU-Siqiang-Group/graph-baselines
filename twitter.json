@@ -1,0 +1,8 @@
+{
+  "datasets": [
+     "twitter-2010.json3"
+  ],
+   "queries": [
+      "get-and-add.groovy"
+  ]
+}
