@@ -8,17 +8,22 @@
 def DATASET_FILE = System.env.get("DATASET")
 def DEBUG = System.env.get("DEBUG") != null
 
-def loadTxtGraph(filename, graphToWrite) {
+def loadTxtGraph(filename, vertexNum, isUndirected, graphToWrite) {
     nsToS = 1000000000;
     System.err.println("loading txt: ${filename}");
     def vs = [];
     t1 = System.nanoTime();
-    totalVertices = 41652230;
+    // totalVertices = 41652230;
+    totalVertices = vertexNum;
     // totalVertices = 20000000;
     for (int i = 0; i < totalVertices; i++) {
-        vs.add(graphToWrite.addVertex("vertex") as Vertex);
+        vs.add(graphToWrite.addVertex(null) as Vertex);
         if (i % 1000000 == 0) {
-            graphToWrite.commit();
+            try {
+                graphToWrite.commit();
+            } catch (MissingMethodException e) {
+                // do nothing..
+            }
             t2 = System.nanoTime();
             System.err.println("loaded ${i} vertices, spend time: ${(t2 - t1) / nsToS} s");
         }
@@ -42,6 +47,9 @@ def loadTxtGraph(filename, graphToWrite) {
             idx1 = evs[0].toInteger();
             idx2 = evs[1].toInteger();
             vs[idx1].addEdge("edge", vs[idx2]);
+            if (isUndirected) {
+                vs[idx2].addEdge("edge", vs[idx1]);
+            }
             idx += 1;
             if (idx % 1000000 == 0) {
                 try {
@@ -64,7 +72,11 @@ def stime = System.currentTimeMillis()
 if (DATASET_FILE.endsWith('.xml'))
     g.loadGraphML(DATASET_FILE)
 else if (DATASET_FILE.contains('twitter-2010') || DATASET_FILE.contains('fake')) {
-    loadTxtGraph(DATASET_FILE, g)
+    loadTxtGraph(DATASET_FILE, 41652230, false, g)
+} else if (DATASET_FILE.contains('com-dblp.ungraph')) {
+    loadTxtGraph(DATASET_FILE, 425957, true, g)
+} else if (DATASET_FILE.contains('com-orkut.ungraph')) {
+    loadTxtGraph(DATASET_FILE, 3072627, true, g)
 } else {
     System.err.println("Start loading")
     g.loadGraphSON(DATASET_FILE)

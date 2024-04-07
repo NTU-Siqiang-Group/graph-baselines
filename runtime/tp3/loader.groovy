@@ -6,12 +6,12 @@
 //  Maintainer: Lissandrini
 
 
-def loadTxtGraph(filename, graphToWrite) {
+def loadTxtGraph(filename, vertexNum, isUndirected, graphToWrite) {
     nsToS = 1000000000;
     System.err.println("loading txt: ${filename}");
     def vs = [];
     t1 = System.nanoTime();
-    totalVertices = 41652230;
+    totalVertices = vertexNum;
     // totalVertices = 20000000;
     for (int i = 0; i < totalVertices; i++) {
         vs.add(graphToWrite.addVertex("vertex") as Vertex);
@@ -39,7 +39,10 @@ def loadTxtGraph(filename, graphToWrite) {
             String[] evs = line.split(" ");
             idx1 = evs[0].toInteger();
             idx2 = evs[1].toInteger();
-            vs[idx1].addEdge("edge", vs[idx2]);
+            vs[idx1].addEdge("edg", vs[idx2]);
+            if (isUndirected) {
+                vs[idx2].addEdge("edg", vs[idx1]);
+            }
             idx += 1;
             if (idx % 1000000 == 0) {
                 try {
@@ -69,7 +72,14 @@ try{
     if (DATASET.endsWith('.xml')) {
         g.loadGraphML(DATASET);
     } else if (DATASET.endsWith('twitter-2010.json3') || DATASET.endsWith('fake.json3')) {
-        loadTxtGraph(DATASET, graph);
+        loadTxtGraph(DATASET, 41652230, false, graph);
+    } else if (DATASET.contains('com-dblp.ungraph.json3')) {
+        // for pg
+        DATASET = '/runtime/data/com-dblp.ungraph.json3'
+        loadTxtGraph(DATASET, 425957, true, graph);
+    } else if (DATASET.contains('com-orkut.ungraph')) {
+        DATASET = '/runtime/data/com-orkut.ungraph.json3'
+        loadTxtGraph(DATASET, 3072627, true, graph);
     } else if (DATASET.endsWith('.json3')) {
         final InputStream is = new FileInputStream(DATASET)
         final GraphSONMapper mapper = graph.io(IoCore.graphson()).mapper().create()

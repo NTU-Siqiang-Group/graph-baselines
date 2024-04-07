@@ -1,0 +1,8 @@
+{
+  "datasets": [
+     "com-orkut.ungraph.json3"
+  ],
+   "queries": [
+      "get-and-add.groovy"
+  ]
+}
