@@ -37,7 +37,7 @@ commands=(
     ["gremlin-titan-tp3"]='LogManager.getRootLogger().setLevel(Level.WARN); TITAN_PROPERTIES=System.env.get("TITAN_PROPERTIES"); graph=TitanFactory.open(TITAN_PROPERTIES); g = graph.traversal()'
     ["gremlin-janus-tp3"]='LogManager.getRootLogger().setLevel(Level.WARN); JANUS_PROPERTIES=System.env.get("JANUS_PROPERTIES"); graph=JanusGraphFactory.open(JANUS_PROPERTIES); g = graph.traversal()'
     ["gremlin-pg"]='graph = SqlgGraph.open("/runtime/confs/sqlg.properties"); g = graph.traversal();'
-    ["gremlin-janusgraph"]='g = graph.traversal();'
+    ["gremlin-janusgraph"]='JANUS_PROPERTIES=System.env.get("JANUS_PROPERTIES"); graph=JanusGraphFactory.open(JANUS_PROPERTIES); g = graph.traversal();'
 )
 
 if [[ -v DEBUG ]]; then

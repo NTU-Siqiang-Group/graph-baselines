@@ -57,3 +57,4 @@ vldb19_sleepy.sh
 
 .vscode/
 runtime/*.log
+images/libs/janusgraph-1.0.0.zip
