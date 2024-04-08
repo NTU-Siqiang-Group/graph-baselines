@@ -62,6 +62,8 @@ RUN chmod 755 /etc/arangodb
 COPY extra/arangodb-collections-extractor.go /main.go
 RUN chmod 755 /main.go
 
+COPY extra/arango-txt-loader.py /arango-txt-loader.py
+
 COPY init/arangodb-init.sh /
 RUN chmod 755 /arangodb-init.sh
 

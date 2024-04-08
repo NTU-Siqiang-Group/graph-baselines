@@ -80,7 +80,13 @@ then
   # 1 entry per row
   echo "Converting JSON"
   go run /main.go -i "${DATASET/%2/}"
-
+  if [[ "$DATASET" == *dblp.ungraph.json3 ]]; then
+    python3 /arango-txt-loader.py --path=$DATASET --vertex=425957 --undirected=true 
+  elif [[ "$DATASET" == *orkut.ungraph.json3 ]]; then
+    python3 /arango-txt-loader.py --path=$DATASET --vertex=3072627 --undirected=true 
+  fi
+  head nodes.json
+  head edges.json
   echo "Loading nodes"
   start_time=$(($(date +%s%N)/1000000))
   # Load nodes
@@ -100,7 +106,7 @@ EOF
   # Load edges
   echo "Loading edges"
   start_time=$(($(date +%s%N)/1000000))
-  arangoimp --server.endpoint tcp://localhost:8529 --file "edges.json" --type json --collection "E" --batch-size 10240
+  arangoimp --server.endpoint tcp://localhost:8529 --file "edges.json" --type json --collection "E" --batch-size 10240 --server.request-timeout 300000
   end_time=$(($(date +%s%N)/1000000))
   echo  ${DATABASE},${DATASET},${QUERY},,,,$(( ($end_time - $start_time) )),native,edges | tee -a ${RUNTIME_DIR}/results.csv
 

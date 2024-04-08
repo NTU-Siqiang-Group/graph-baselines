@@ -92,6 +92,9 @@ if [[ "${QUERY}" == *loader.groovy ]] && [[ -z ${NOHASH+x} ]]; then
    # GO MOD
    go run /pghash.go -i "${DATASET}" -o "${SAFE_DATASET}" -r "/tmp/replacements.txt"
 
+   if [[ ! -f $SAFE_DATASET ]]; then
+    touch $SAFE_DATASET
+   fi
    # Checks
    # ls -lh $SAFE_DATASET | tee -a ${RUNTIME_DIR}/errors
    # md5sum $SAFE_DATASET | tee -a ${RUNTIME_DIR}/errors
