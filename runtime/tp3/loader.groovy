@@ -80,7 +80,28 @@ try{
     } else if (DATASET.contains('com-orkut.ungraph')) {
         DATASET = '/runtime/data/com-orkut.ungraph.json3'
         loadTxtGraph(DATASET, 3072627, true, graph);
-    } else if (DATASET.endsWith('.json3')) {
+    } else if (DATASET.contains('twitch')) {
+        DATASET = '/runtime/data/twitch.json3'
+        loadTxtGraph(DATASET, 168115, true, graph);
+    } else if (DATASET.contains('berkstan')) {
+        DATASET = '/runtime/data/berkstan.json3'
+        loadTxtGraph(DATASET, 685231, false, graph);
+    } else if (DATASET.contains('topcats')) {
+        DATASET = '/runtime/data/topcats.json3'
+        loadTxtGraph(DATASET, 1791489, false, graph);
+    } else if (DATASET.contains('pokec')) {
+        DATASET = '/runtime/data/pokec.json3'
+        loadTxtGraph(DATASET, 1632804, false, graph);
+    } else if (DATASET.contains('journal')) {
+        DATASET = '/runtime/data/journal.json3'
+        loadTxtGraph(DATASET, 4847572, false, graph);
+    } else if (DATASET.contains('dbpedia')) {
+        DATASET = '/runtime/data/dbpedia.json3'
+        loadTxtGraph(DATASET, 18268993, false, graph);
+    } else if (DATASET.contains('wikipedia')) {
+        loadTxtGraph(DATASET, 3333398, false, graph);
+    }
+    else if (DATASET.endsWith('.json3')) {
         final InputStream is = new FileInputStream(DATASET)
         final GraphSONMapper mapper = graph.io(IoCore.graphson()).mapper().create()
         //graph.io(IoCore.graphson()).writer().mapper(mapper).create().writeGraph(os, graph);

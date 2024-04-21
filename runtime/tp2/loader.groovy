@@ -77,6 +77,8 @@ else if (DATASET_FILE.contains('twitter-2010') || DATASET_FILE.contains('fake'))
     loadTxtGraph(DATASET_FILE, 425957, true, g)
 } else if (DATASET_FILE.contains('com-orkut.ungraph')) {
     loadTxtGraph(DATASET_FILE, 3072627, true, g)
+} else if (DATASET_FILE.contains("wikipedia")) {
+    loadTxtGraph(DATASET_FILE, 3333397, false, g);
 } else {
     System.err.println("Start loading")
     g.loadGraphSON(DATASET_FILE)

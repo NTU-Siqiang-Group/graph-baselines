@@ -182,6 +182,25 @@ def get_random_array(n, seed) {
     return ra;
 }
 
+def get_ids_from_files(filename) {
+    def ids = [];
+    def is = new FileReader(filename);
+    def reader = new BufferedReader(is);
+    try {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
+                ids.add(line.toInteger());
+            } else {
+                ids.add(line);
+            }
+        }
+    } finally {
+        is.close();
+    }
+    return ids;
+}
+
 EOF
 
 if [[ "$QUERY" != *loader.groovy ]] && [[ "$QUERY" != *sampler.groovy ]]; then

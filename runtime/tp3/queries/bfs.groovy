@@ -1,21 +1,19 @@
 #META;
 
-p = g.V().id();
+id_file_path = System.getenv("METAPATH");
+println("get sampled id from ${id_file_path}");
 
-depth = 10;
+allIds = f.get_ids_from_files(id_file_path);
+// println(allIds);
+rand = new Random();
 
-def nextStep(p, idx, round) {
-  return p.out().sideEffect{print("v${idx} at round ${round}: ${it};\n")}.barrier();
-}
+depth = 3;
 
-for (int i = 0; i < 1000; i++) {
-  vid1 = p.next();
-  exec = g.V(vid1);
-  for (int j = 0; j < depth; j++) {
-    exec = nextStep(exec, i, j);
-  }
+for (int i = 0; i < 10; i++) {
+  startId = allIds[rand.nextInt() % allIds.size()];
+  v = g.V(startId);
   t = System.nanoTime();
-  exec.fold().next();
+  count = v.repeat(both().where(without("x")).aggregate("x")).times(depth).cap("x").next().size();
   exec_time = System.nanoTime() - t;
-  println("BFS start from " + vid1 + " finished in " + exec_time + " ns");
+  println("BFS start from " + startId + " finished in " + exec_time + " ns");
 }

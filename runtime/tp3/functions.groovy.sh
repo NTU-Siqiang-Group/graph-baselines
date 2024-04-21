@@ -217,6 +217,44 @@ def infer_type(number) {
     return number;
 }
 
+def get_ids_from_files(filename) {
+    def ids = [];
+    def is = new FileReader(filename);
+    def reader = new BufferedReader(is);
+    try {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
+                ids.add(line.toInteger());
+            } else {
+                ids.add(line);
+            }
+        }
+    } finally {
+        is.close();
+    }
+    return ids;
+}
+
+def get_long_ids_from_files(filename) {
+    def ids = [];
+    def is = new FileReader(filename);
+    def reader = new BufferedReader(is);
+    try {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
+                ids.add(line.toLong());
+            } else {
+                ids.add(line);
+            }
+        }
+    } finally {
+        is.close();
+    }
+    return ids;
+}
+
 }
 
 EOF
