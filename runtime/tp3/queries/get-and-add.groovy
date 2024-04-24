@@ -7,8 +7,15 @@ all_id_file_path = System.getenv("ALLIDPATH");
 println("get all id from ${all_id_file_path}");
 
 allIds = []
+is_janus = false;
 if (all_id_file_path.contains("janusgraph")) {
   allIds = f.get_long_ids_from_files(all_id_file_path);
+  println("janus change config");
+  mgmt = graph.openManagement()
+  // mgmt.set('cache.db-cache', false);
+  mgmt.set('storage.buffer-size', 1);
+  mgmt.commit();
+  is_janus = true;
 } else {
   allIds = f.get_ids_from_files(all_id_file_path);
 }
@@ -61,6 +68,9 @@ for (int i = 0; i < op_arr.size(); i++) {
     v2 = g.V(vid2).next();
     t = System.nanoTime();
     v1.addEdge(tl, v2);
+    if (is_janus) {
+      graph.tx().commit();
+    }
     exec_time = System.nanoTime() - t;
     println("Edge added between " + vid1 + " and " + vid2 + " in " + exec_time + " ns");
   }

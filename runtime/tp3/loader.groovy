@@ -99,6 +99,7 @@ try{
         DATASET = '/runtime/data/dbpedia.json3'
         loadTxtGraph(DATASET, 18268993, false, graph);
     } else if (DATASET.contains('wikipedia')) {
+        DATASET = '/runtime/data/wikipedia.json3'
         loadTxtGraph(DATASET, 3333398, false, graph);
     }
     else if (DATASET.endsWith('.json3')) {
