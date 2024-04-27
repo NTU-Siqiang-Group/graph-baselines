@@ -1,14 +1,14 @@
 #META;
 
-id_file_path = System.getenv("METAPATH");
-println("get sampled id from ${id_file_path}");
+// id_file_path = System.getenv("METAPATH");
+// println("get sampled id from ${id_file_path}");
 
 all_id_file_path = System.getenv("ALLIDPATH");
 println("get all id from ${all_id_file_path}");
 
-sampleIds = get_ids_from_files(id_file_path);
+// sampleIds = get_ids_from_files(id_file_path);
 allIds = get_ids_from_files(all_id_file_path);
-// println(allIds);
+println(allIds);
 rand = new Random();
 
 residuals = [:];
@@ -28,7 +28,7 @@ empty_bitmap = bitmap;
 
 println("init finished");
 
-src = sampleIds[rand.nextInt() % sampleIds.size()];
+src = allIds[rand.nextInt() % allIds.size()];
 residuals[src] = 1.0;
 bitmap[src] = 1;
 q = [src] as Queue;
@@ -45,7 +45,7 @@ for (int i = 0; i < max_steps; i++) {
     // println(outIds);
     for (int k = 0; k < outIds.size(); k++) {
       cur_id = outIds[k];
-      if (!id_file_path.contains('gremlin-pg') && !id_file_path.contains('orientdb')) {
+      if (!all_id_file_path.contains('gremlin-pg') && !all_id_file_path.contains('orientdb')) {
         cur_id = cur_id.toInteger();
       } else {
         cur_id = "${cur_id}";
