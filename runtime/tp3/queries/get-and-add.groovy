@@ -10,11 +10,6 @@ allIds = []
 is_janus = false;
 if (all_id_file_path.contains("janusgraph")) {
   allIds = f.get_long_ids_from_files(all_id_file_path);
-  println("janus change config");
-  mgmt = graph.openManagement()
-  // mgmt.set('cache.db-cache', false);
-  mgmt.set('storage.buffer-size', 1);
-  mgmt.commit();
   is_janus = true;
 } else {
   allIds = f.get_ids_from_files(all_id_file_path);
@@ -48,17 +43,14 @@ for (int i = 0; i < wops; i++) {
 }
 
 Collections.shuffle(op_arr);
+cur_wops = 0;
 
 for (int i = 0; i < op_arr.size(); i++) {
   if (op_arr[i] > 0) {
     vid = allIds[rand.nextInt() % allIds.size()];
     v1 = g.V(vid);
     t = System.nanoTime();
-    if (op_arr[i] == 1) {
-      cnt = v1.out().count().next();
-    } else {
-      cnt = v1.out().count().next();
-    }
+    cnt = v1.out().count().next();
     exec_time = System.nanoTime() - t;
     println("Vertex " + vid + " has " + cnt + " out neighbors (${op_arr[i]}) in " + exec_time + " ns");
   } else {
@@ -68,10 +60,27 @@ for (int i = 0; i < op_arr.size(); i++) {
     v2 = g.V(vid2).next();
     t = System.nanoTime();
     v1.addEdge(tl, v2);
-    if (is_janus) {
-      graph.tx().commit();
-    }
     exec_time = System.nanoTime() - t;
-    println("Edge added between " + vid1 + " and " + vid2 + " in " + exec_time + " ns");
+    println("Edge added between " + vid1 + " and " + vid2 + " in " + exec_time + " ns , cur_wops: " + cur_wops);
+    cur_wops += 1;
+    if (cur_wops % 10000 == 0) {
+      t = System.nanoTime();
+      try {
+        graph.tx().commit();
+        exec_time = System.nanoTime() - t
+        println("Commit Time: " + exec_time + " ns");
+      } catch (Exception e) {
+        println("Not support commit");
+      }
+    }
   }
+}
+
+t = System.nanoTime();
+try {
+  graph.tx().commit();
+  exec_time = System.nanoTime() - t
+  println("Commit Time: " + exec_time + " ns");
+} catch (Exception e) {
+  println("Not support commit");
 }

@@ -34,9 +34,10 @@ for (int i = 0; i < wops; i++) {
 }
 
 Collections.shuffle(op_arr);
+write_ops = 0;
 
 for (int i = 0; i < op_arr.size(); i++) {
-  if (i > 0) {
+  if (op_arr[i] > 0) {
     vid = allIds[rand.nextInt() % allIds.size()];
     v1 = g.v(vid);
     t = System.nanoTime();
@@ -52,8 +53,25 @@ for (int i = 0; i < op_arr.size(); i++) {
     v1.addEdge(tl, v2);
     exec_time = System.nanoTime() - t;
     println("Edge added between " + v1 + " and " + v2 + " in " + exec_time + " ns");
+    write_ops += 1;
+    if (write_ops % 10000 == 0) {
+      try {
+        t = System.nanoTime();
+        g.commit();
+        exec_time = System.nanoTime() - t
+        println("Commit Time: " + exec_time + " ns");
+      } catch (Exception e) {
+        println("Not support commit");
+      }
+    }
   }
 }
-// println("final edge size: " + g.E.count());
-result_row = [ DATABASE, DATASET, QUERY,"0", ITERATION, "0", "0"];
-println result_row.join(',');
+
+try {
+  t = System.nanoTime();
+  g.commit();
+  exec_time = System.nanoTime() - t
+  println("Commit Time: " + exec_time + " ns");
+} catch (Exception e) {
+  println("Not support commit");
+}
