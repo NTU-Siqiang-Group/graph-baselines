@@ -1,20 +1,25 @@
 #META;
 
-p = g.V().id();
+all_id_file_path = System.getenv("GRAPHMAPPING");
+println("get all id from ${all_id_file_path}");
 
-id_file_path = System.getenv("METAPATH");
-println("get sampled id from ${id_file_path}");
+allIds= [];
+if (all_id_file_path.contains("janusgraph")) {
+  allIds = f.get_long_ids_from_files(all_id_file_path);
+  is_janus = true;
+} else {
+  allIds = f.get_ids_from_files(all_id_file_path);
+}
+println("all ids size: ${allIds.size()}");
 
-allIds = f.get_ids_from_files(id_file_path);
-// println(allIds);
 rand = new Random();
 
-for (int i = 0; i < 10; i++) {
-  srcId = allIds[rand.nextInt() % allIds.size()];
-  dstId = allIds[rand.nextInt() % allIds.size()];
+for (int i = 0; i < 1; i++) {
+  srcId = allIds[Integer.parseInt(System.getenv("SOURCE_VERTEX"))];
+  dstId = allIds[Integer.parseInt(System.getenv("DST_VERTEX"))];
   srcV = g.V(srcId);
   t = System.nanoTime();
-  l = srcV.repeat(both().where(without("x")).aggregate("x")).until(hasId(dstId)).limit(1).path().count(local);
+  l = srcV.repeat(out().where(without("x")).aggregate("x")).until(hasId(dstId)).limit(1).path().count(local);
   if (l.hasNext()) {
     x = l.next();
   } else {

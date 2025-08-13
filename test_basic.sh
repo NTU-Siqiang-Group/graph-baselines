@@ -25,6 +25,8 @@ EOF
   -e JAVA_OPTIONS="-Xms1G -Xmn128M -Xmx100G" \
   -e METAPATH=$metapath \
   -e ALLIDPATH=$allidpath \
+  -e DBNAME=$db_name \
+  -e GRAPHNAME=$dataset \
   -e rops=$rops \
   -e wops=$wops \
   -s runtime/data/tmp.json \
@@ -33,16 +35,16 @@ EOF
   python3 stats.py --path=runtime/debug.log -w $alg
 }
 
-# DATASETS=("com-orkut.ungraph.json3")
+# DATASETS=("com-dblp.ungraph.json3")
 # DATASETS=('wikipedia.json3')
-# DATASETS=("com-orkut.ungraph.json3" 'wikipedia.json3' "twitter-2010.json3")
-DATASETS=('wikipedia.json3' "com-orkut.ungraph.json3")
-# IMAGES=(dbtrento/gremlin-neo4j-tp3 dbtrento/gremlin-janusgraph)
+DATASETS=("wikipedia.json3")
+# DATASETS=('wikipedia.json3' "com-orkut.ungraph.json3")
 # IMAGES=(dbtrento/gremlin-orientdb)
-IMAGES=(dbtrento/gremlin-neo4j-tp3 dbtrento/gremlin-orientdb dbtrento/gremlin-arangodb dbtrento/gremlin-pg  dbtrento/gremlin-janusgraph)
+# IMAGES=(dbtrento/gremlin-orientdb)
+IMAGES=(dbtrento/gremlin-orientdb dbtrento/gremlin-arangodb dbtrento/gremlin-pg dbtrento/gremlin-janusgraph)
 
-ratios=(0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9)
-# ratios=(0.5)
+# ratios=(0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9)
+ratios=(0.5)
 
 for dataset in "${DATASETS[@]}"
 do
@@ -52,8 +54,8 @@ do
     # echo $db_name
     for ratio in "${ratios[@]}"
     do
-      rop=$(python3 -c "print(int(2000000*$ratio))")
-      wop=$(python3 -c "print(int(2000000*(1-$ratio)))")
+      rop=$(python3 -c "print(int(000000*$ratio))")
+      wop=$(python3 -c "print(int(000000*(1-$ratio)))")
       echo "testing $img on $dataset: rops=$rop, wops=$wop ..." 
       test_once get-and-add.groovy $dataset $img $rop $wop
       cp runtime/debug.log runtime/logs/${db_name}_${dataset}_${alg}.log

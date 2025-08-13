@@ -29,6 +29,20 @@ def loadTxtGraph(filename, vertexNum, isUndirected, graphToWrite) {
         // do nothing..
     }
     System.err.println("loaded all vertices, spend time: ${(t2 - t1) / nsToS} s");
+    dbName = System.env.get("DBNAME");
+    graphName = System.env.get("GRAPHNAME");
+    outputFile = "/runtime/meta/graphid/" + dbName + "." + graphName + ".mapping";
+    try {
+        out = new FileOutputStream(outputFile);
+        for (int i = 0; i < totalVertices; i++) {
+            data = "${i} ${vs[i].id().toString()}\n";
+            out.write(data.getBytes());
+        }
+        out.close();
+    } catch (Exception e) {
+        // do nothing
+        System.err.println(e);
+    }
     is = new FileReader(filename);
     reader = new BufferedReader(is);
     idx = 0;
@@ -101,6 +115,12 @@ try{
     } else if (DATASET.contains('wikipedia')) {
         DATASET = '/runtime/data/wikipedia.json3'
         loadTxtGraph(DATASET, 3333398, false, graph);
+    } else if (DATASET.contains('wikitalk')) {
+        DATASET = '/runtime/data/wikitalk.json3'
+        loadTxtGraph(DATASET, 2394386, false, graph);
+    } else if (DATASET.contains('cit-patents')) {
+        DATASET = '/runtime/data/cit-patents.json3'
+        loadTxtGraph(DATASET, 3774769, false, graph);
     }
     else if (DATASET.endsWith('.json3')) {
         final InputStream is = new FileInputStream(DATASET)

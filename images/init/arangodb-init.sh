@@ -88,6 +88,10 @@ then
     python3 /arango-txt-loader.py --path=$DATASET --vertex=41652230 --undirected=false
   elif [[ "$DATASET" == *wikipedia.json3 ]]; then
     python3 /arango-txt-loader.py --path=$DATASET --vertex=3333397
+  elif [[ "$DATASET" == *wikitalk.json3 ]]; then
+    python3 /arango-txt-loader.py --path=$DATASET --vertex=2394386
+  elif [[ "$DATASET" == *cit-patents.json3 ]]; then
+    python3 /arango-txt-loader.py --path=$DATASET --vertex=3774769
   fi
   head nodes.json
   head edges.json

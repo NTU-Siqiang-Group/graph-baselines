@@ -17,7 +17,7 @@ $JANUS_HOME/bin/janusgraph-server.sh start $JANUS_CONF
 
 # wait for janusgraph start
 sleep 20
-rm $JANUS_HOME/conf/../db/berkeley/je.lck
+rm -f $JANUS_HOME/conf/../db/berkeley/je.lck
 
 . ${RUNTIME_DIR}/tp3/execute.sh
 

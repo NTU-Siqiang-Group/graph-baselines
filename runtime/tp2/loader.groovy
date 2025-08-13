@@ -36,6 +36,19 @@ def loadTxtGraph(filename, vertexNum, isUndirected, graphToWrite) {
         // do nothing..
     }
     System.err.println("loaded all vertices, spend time: ${(t2 - t1) / nsToS} s");
+    dbName = System.env.get("DBNAME");
+    graphName = System.env.get("GRAPHNAME");
+    outputFile = "/runtime/meta/graphid/" + dbName + "." + graphName + ".mapping";
+    try {
+        out = new FileOutputStream(outputFile);
+        for (int i = 0; i < totalVertices; i++) {
+            data = "${i} ${vs[i].id.toString()}\n";
+            out.write(data.getBytes());
+        }
+        out.close();
+    } catch (Exception e) {
+        // do nothing
+    }
     is = new FileReader(filename);
     reader = new BufferedReader(is);
     idx = 0;
@@ -79,6 +92,10 @@ else if (DATASET_FILE.contains('twitter-2010') || DATASET_FILE.contains('fake'))
     loadTxtGraph(DATASET_FILE, 3072627, true, g)
 } else if (DATASET_FILE.contains("wikipedia")) {
     loadTxtGraph(DATASET_FILE, 3333397, false, g);
+} else if (DATASET_FILE.contains("wikitalk")) {
+    loadTxtGraph(DATASET_FILE, 2394386, false, g);
+} else if (DATASET_FILE.contains('cit-patents')) {
+    loadTxtGraph(DATASET_FILE, 3774769, false, g);
 } else {
     System.err.println("Start loading")
     g.loadGraphSON(DATASET_FILE)

@@ -224,10 +224,11 @@ def get_ids_from_files(filename) {
     try {
         String line = null;
         while ((line = reader.readLine()) != null) {
+            def words = line.split(' ');
             if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
-                ids.add(line.toInteger());
+                ids.add(words[1].toInteger());
             } else {
-                ids.add(line);
+                ids.add(words[1]);
             }
         }
     } finally {
@@ -243,10 +244,11 @@ def get_long_ids_from_files(filename) {
     try {
         String line = null;
         while ((line = reader.readLine()) != null) {
+            def words = line.split(' ');
             if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
-                ids.add(line.toLong());
+                ids.add(words[1].toLong());
             } else {
-                ids.add(line);
+                ids.add(words[1]);
             }
         }
     } finally {
@@ -254,6 +256,17 @@ def get_long_ids_from_files(filename) {
     }
     return ids;
 }
+
+def castId(id, all_id_file_path) {
+  if (all_id_file_path.contains("janusgraph")) {
+    return (Long)id;
+  } else if (all_id_file_path.contains("gremlin-pg") || all_id_file_path.contains("gremlin-orientdb")) {
+    return (String)id;
+  } else {
+    return (Integer)id;
+  }
+}
+
 
 }
 
