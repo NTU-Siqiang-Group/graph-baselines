@@ -1,8 +1,0 @@
-{
-  "datasets": [
-     "com-dblp.ungraph.json3"
-  ],
-   "queries": [
-      "get-and-add.groovy"
-  ]
-}
