@@ -1,7 +1,15 @@
 FROM maven:3.6.3-jdk-8
 
-RUN apt-get update \
-  && apt-get -y install unzip
+# point to archived repos for EOL buster
+RUN printf 'deb http://archive.debian.org/debian buster main contrib non-free\n' \
+        > /etc/apt/sources.list && \
+    printf 'deb http://archive.debian.org/debian buster-updates main contrib non-free\n' \
+        >> /etc/apt/sources.list && \
+    printf 'deb http://archive.debian.org/debian-security buster/updates main contrib non-free\n' \
+        >> /etc/apt/sources.list && \
+    apt-get -o Acquire::Check-Valid-Until=false update && \
+    apt-get install -y --no-install-recommends unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 ADD libs/janusgraph-1.0.0.zip /opt
 

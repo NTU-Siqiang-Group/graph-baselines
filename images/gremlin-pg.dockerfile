@@ -1,18 +1,15 @@
-FROM ubuntu:20.04
+FROM openjdk:8
 LABEL authors="Brugnara <mb@disi.unitn.eu>, Matteo Lissandrini <ml@disi.unitn.eu>"
 
-# RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys CD8CB0F1E0AD5B52E93F41E7EA93F5E56E751E9B B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 7FCC7D46ACCC4CF8
+ENV GREMLIN3_TAG=3.2.9
+ENV GREMLIN3_HOME=/opt/gremlin
+ENV PATH=/opt/gremlin/bin:$PATH
 
-ENV GREMLIN3_TAG 3.2.9
-ENV GREMLIN3_HOME /opt/gremlin
-ENV PATH /opt/gremlin/bin:$PATH
-ENV DEBIAN_FRONTEND=noninteractive 
-
+# 基础包
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         build-essential \
-        libstdc++6 \
         libgoogle-perftools4 \
         ca-certificates \
         pwgen \
@@ -21,78 +18,66 @@ RUN apt-get update && \
         golang \
         curl \
         bash \
-        ant \
-        git-core \
-        locales \
-        wget \
-        sudo \
-        gnupg \
         maven \
-        openjdk-8-jdk
+        ant \
+        git \
+        locales \
+        sudo \
+        gnupg && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1_amd64.deb && \
-    apt-get install ./multiarch-support_2.27-3ubuntu1_amd64.deb
-
-# --> fixing missing libssl1.0.0
-ENV LIBSSL_DEB libssl1.0.0_1.0.1t-1+deb7u4_amd64.deb
-# ENV LIBSSL_URL http://security.debian.org/debian-security/pool/updates/main/o/openssl/${LIBSSL_DEB}
-COPY extra/pkg/$LIBSSL_DEB .
-RUN dpkg -i ${LIBSSL_DEB} && \
-    rm -f ${LIBSSL_DEB}
-
-# Postgresql, heavily inspired (copied) from:
-# https://github.com/docker-library/postgres/blob/54053ad27ac099abff3d4964bf7460fb9c541d5d/9.6/Dockerfile
-RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
-
-# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
+# 生成 UTF-8 locale（PG 需要）
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-ENV LANG en_US.utf8
+ENV LANG=en_US.utf8
 
-# RUN set -ex; \
-#     key='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8'; \
-#     gpg --export "$key" > /etc/apt/trusted.gpg.d/postgres.gpg; \
-#     apt-key list
+# ====== PostgreSQL 15 安装（PGDG bullseye 源）======
+ARG PG_MAJOR=15
+ENV PG_MAJOR=${PG_MAJOR}
 
-ENV PG_MAJOR 9.6
-#ENV PG_VERSION 9.6.3-1.pgdg80+1
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list && \
-    wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - 
+# 导入 PGDG key 并添加 bullseye 源（不要 jessie）
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg; \
+    install -d /usr/share/keyrings; \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+      | gpg --dearmor -o /usr/share/keyrings/postgresql.gpg; \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" \
+      > /etc/apt/sources.list.d/pgdg.list; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends postgresql-common; \
+    sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf; \
+    apt-get install -y --no-install-recommends \
+      postgresql-${PG_MAJOR} postgresql-contrib-${PG_MAJOR}; \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update --allow-unauthenticated \
-    && apt-get install -y --allow-unauthenticated --no-install-recommends postgresql-common \
-    && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
-RUN apt-get install -y --allow-unauthenticated --no-install-recommends \
-        postgresql-$PG_MAJOR \
-        postgresql-contrib-$PG_MAJOR \
-        python2 \
-    && rm -rf /var/lib/apt/lists/*
+# postgres 用户与运行目录
+RUN getent group postgres >/dev/null || groupadd -r postgres --gid=999 && \
+    id -u postgres >/dev/null 2>&1 || useradd -r -g postgres --uid=999 postgres && \
+    mkdir -p /var/run/postgresql && \
+    chown -R postgres:postgres /var/run/postgresql && \
+    chmod 2777 /var/run/postgresql
 
+# 配置模板（注意路径仍然以 PG_MAJOR 区分）
+RUN mv -v /usr/share/postgresql/${PG_MAJOR}/postgresql.conf.sample /usr/share/postgresql/ && \
+    cp /usr/share/postgresql/postgresql.conf.sample /tmp/postgresql.conf.sample
 
-# make the sample config easier to munge (and "correct by default")
-RUN mv -v /usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample /usr/share/postgresql/
-RUN cp /usr/share/postgresql/postgresql.conf.sample /tmp/postgresql.conf.sample
+# RUN apt-get update && apt-get install -y --no-install-recommends python3 && \
+#     rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/andreif/pgtune.git  --branch allthethings --single-branch pgtune \
-    && pgtune/pgtune --type=Web --version=${PG_MAJOR}  -i /usr/share/postgresql/postgresql.conf.sample -o /tmp/postgresql.conf.sample.tuned \
-    && mv /tmp/postgresql.conf.sample.tuned  /usr/share/postgresql/postgresql.conf.sample \
-    && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample \
-    && sed -i "s/#max_locks_per_transaction\ =\ 64/max_locks_per_transaction\ =\ 256/" /usr/share/postgresql/postgresql.conf.sample \
-    && ln -sv ../postgresql.conf.sample /usr/share/postgresql/$PG_MAJOR/
+# # pgtune（使用 version=15）
+# RUN git clone https://github.com/andreif/pgtune.git --branch allthethings --single-branch pgtune && \
+#     pgtune/pgtune --type=Web --version=${PG_MAJOR} \
+#       -i /usr/share/postgresql/postgresql.conf.sample \
+#       -o /tmp/postgresql.conf.sample.tuned && \
+#     mv /tmp/postgresql.conf.sample.tuned /usr/share/postgresql/postgresql.conf.sample && \
+#     sed -ri "s!^#?(listen_addresses)\\s*=\\s*\\S+.*!\\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample && \
+#     sed -i  "s/#max_locks_per_transaction\\ =\\ 64/max_locks_per_transaction = 256/" /usr/share/postgresql/postgresql.conf.sample && \
+#     ln -sv ../postgresql.conf.sample /usr/share/postgresql/${PG_MAJOR}/
 
-
-RUN mkdir -p /var/run/postgresql \
-    && chown -R postgres:postgres /var/run/postgresql \
-    && chmod 2777 /var/run/postgresql
-
-ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
-ENV PGDATA /var/lib/postgresql/data
-RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
-RUN mvn dependency:get -Dartifact=org.umlg:sqlg-postgres-dialect:1.3.3
-RUN mvn dependency:get -Dartifact=org.umlg:sqlg-postgres:1.3.3
-
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-RUN ln -sf $JAVA_HOME/bin/java /usr/bin/java
-
+# PATH 与数据目录
+ENV PATH=/usr/lib/postgresql/${PG_MAJOR}/bin:$PATH
+ENV PGDATA=/var/lib/postgresql/data
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 # (We need to commit the data)
 # VOLUME /var/lib/postgresql/data
 
