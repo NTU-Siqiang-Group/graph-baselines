@@ -1,0 +1,16 @@
+{
+    "datasets": [
+        "ldbc.json2",
+        "freebase_large.json2"
+    ],
+    "queries": [
+        "insert-node-property.groovy",
+        "insert-edge-property.groovy",
+        "node-property-search.groovy",
+        "edge-specific-property-search.groovy",
+        "update-node-property.groovy",
+        "update-edge-property.groovy",
+        "delete-node-property.groovy",
+        "delete-edge-property.groovy"
+    ]
+}

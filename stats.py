@@ -20,7 +20,9 @@ def get_stat_for_get_and_add(path):
       line = f.readline()
   get_stat = np.array(get_stat)
   add_stat = np.array(add_stat)
-  return f'get avg: {np.mean(get_stat)}, get std: {np.std(get_stat)}, add avg: {np.mean(add_stat)}, add std: {np.std(add_stat)}'
+  db_name = path.split('/')[-1].split('_')[0]
+  return f'{db_name},{np.mean(get_stat):.2f},{np.mean(add_stat):.2f}'
+  # return f'get avg: {np.mean(get_stat)}, get std: {np.std(get_stat)}, add avg: {np.mean(add_stat)}, add std: {np.std(add_stat)}'
 
 def get_stat_normal(keyword, algm):
   def analyze_stat(path):
@@ -154,6 +156,52 @@ def get_all_id(path):
           f1.write(f'{line[s:]}')
         line = f.readline()
 
+def get_stat_for_basics(path):
+  get_neighbors_times = []
+  add_vertex_times = []
+  add_edge_times = []
+  del_edge_times = []
+  with open(path, 'r') as f:
+    for line in f:
+      if 'Get Vertex in ' in line:
+        t = int(line.split(' ')[-2])
+        get_neighbors_times.append(t / 1000)
+      elif 'Add Vertex in ' in line:
+        t = int(line.split(' ')[-2])
+        add_vertex_times.append(t / 1000)
+      elif 'Edge added in ' in line:
+        t = int(line.split(' ')[-2])
+        add_edge_times.append(t / 1000)
+      elif 'Edge deleted in ' in line:
+        t = int(line.split(' ')[-2])
+        del_edge_times.append(t / 1000)
+  db_name = path.split('/')[-1].split('_')[0]
+  return f'{db_name},{np.mean(get_neighbors_times):.2f},{np.mean(add_vertex_times):.2f},{np.mean(add_edge_times):.2f},{np.mean(del_edge_times):.2f}'
+
+def get_property_stats(alg, key):
+
+  def get_specific_property(path):
+    times = []
+    db_name = path.split('/')[-1].split('_')[0]
+    with open(path, 'r') as f:
+      for line in f:
+        if key in line:
+          times.append(int(line.split(' ')[-2])/ 1000)
+    return f'{db_name},{alg},{np.mean(times):.2f}'
+
+  return get_specific_property
+
+properties = {
+  "delete-edge-property.groovy": "delete edge property used time ",
+  "delete-node-property.groovy": "delete node used time ",
+  "edge-specific-property-search.groovy": "edge property search used time ",
+  "insert-edge-property.groovy": "insert-edge-property used time ",
+  "insert-node-property.groovy": "insert-node-property used time: ",
+  "node-property-search.groovy": "node property search used time ",
+  "update-edge-property.groovy": "update edge property used time ",
+  "update-node-property.groovy": "update node property used time "
+}
+
 commands = {
   'get-and-add.groovy': get_stat_for_get_and_add,
   'bfs.groovy': get_stat_normal('BFS start from ', 'bfs'),
@@ -164,8 +212,13 @@ commands = {
   'allids.groovy': printPath,
   'gen_sample': gen_sample,
   'get_all_ids': get_all_id,
-  'ppr.groovy': get_stat_normal('PPR finished ', 'PPR')
+  'ppr.groovy': get_stat_normal('PPR finished ', 'PPR'),
+  'basics.groovy': get_stat_for_basics,
 }
+
+for alg in properties.keys():
+  commands[alg] = get_property_stats(alg, properties[alg])
+  
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='process test result')
