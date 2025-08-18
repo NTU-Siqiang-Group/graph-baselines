@@ -194,7 +194,7 @@ EOF
 
 
 
-if [[ "$QUERY" != *loader.groovy ]] && [[ "$QUERY" != *sampler.groovy ]]; then
+if [[ "$QUERY" != *loader.groovy ]] && [[ "$QUERY" != *get-and-add.groovy ]] && [[ "$QUERY" != *basics.groovy ]] && [[ "$QUERY" != *sampler.groovy ]]; then
 cat<<EOF
 
 //lidm = [:]

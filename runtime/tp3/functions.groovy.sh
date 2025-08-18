@@ -226,9 +226,9 @@ def get_ids_from_files(filename) {
         while ((line = reader.readLine()) != null) {
             def words = line.split(' ');
             if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
-                ids.add(words[1].toInteger());
+                ids.add(words[0].toInteger());
             } else {
-                ids.add(words[1]);
+                ids.add(words[0]);
             }
         }
     } finally {
@@ -246,9 +246,9 @@ def get_long_ids_from_files(filename) {
         while ((line = reader.readLine()) != null) {
             def words = line.split(' ');
             if (!filename.contains("gremlin-pg") && !filename.contains("gremlin-orientdb")) {
-                ids.add(words[1].toLong());
+                ids.add(words[0].toLong());
             } else {
-                ids.add(words[1]);
+                ids.add(words[0]);
             }
         }
     } finally {

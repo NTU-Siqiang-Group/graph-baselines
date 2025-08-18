@@ -4,6 +4,20 @@ SID = System.env.get("SID").toInteger();
 
 PROPERTY_NAME= "test_common_property";
 
+all_id_file_path = System.getenv("ALLIDPATH");
+println("get all id from ${all_id_file_path}");
+
+allIds = []
+is_janus = false;
+if (all_id_file_path.contains("janusgraph")) {
+  allIds = f.get_long_ids_from_files(all_id_file_path);
+  is_janus = true;
+} else {
+  allIds = f.get_ids_from_files(all_id_file_path);
+}
+
+rand = new Random();
+
 def execute_query(g,id,i,ORDER_j,DATABASE,DATASET,QUERY,ITERATION,OBJECT_ARRAY,SID, PROP_NAME, SKIP_COMMIT){
 	e = g.E(id).next();
 	t = System.nanoTime();
@@ -21,18 +35,24 @@ def execute_query(g,id,i,ORDER_j,DATABASE,DATASET,QUERY,ITERATION,OBJECT_ARRAY,S
 	//after = g.E(id).properties().next();
 
         //DATABASE,DATASET,QUERY,SID,ITERATION,ORDER,TIME,OUTPUT,PARAMETER1(EDGE),PARAMETER2(PROPERTY)
-	result_row = [ DATABASE, DATASET, QUERY, String.valueOf(SID), ITERATION, String.valueOf(ORDER_j), String.valueOf(exec_time), '', String.valueOf(OBJECT_ARRAY[i].source)+" -- "+OBJECT_ARRAY[i].label+" -> "+ String.valueOf(OBJECT_ARRAY[i].target), String.valueOf(PROP_NAME)];
-	println result_row.join(',');
+	// result_row = [ DATABASE, DATASET, QUERY, String.valueOf(SID), ITERATION, String.valueOf(ORDER_j), String.valueOf(exec_time), '', String.valueOf(OBJECT_ARRAY[i].source)+" -- "+OBJECT_ARRAY[i].label+" -> "+ String.valueOf(OBJECT_ARRAY[i].target), String.valueOf(PROP_NAME)];
+	// println result_row.join(',');
+	println("delete edge property used time " + exec_time + " ns");
 }
 
-if (SID == EDGE_LID_ARRAY.size()) { 
-	order_j = 1;
-	for (i in RAND_ARRAY) {
-       execute_query(g,EDGE_LID_ARRAY[i],i,order_j,DATABASE,DATASET,QUERY,ITERATION,EDGE_ARRAY,SID,PROPERTY_NAME, SKIP_COMMIT);
-       order_j++;
-	}
-} else {
-	execute_query(g,EDGE_LID_ARRAY[SID],SID,0,DATABASE,DATASET,QUERY,ITERATION,EDGE_ARRAY,SID,PROPERTY_NAME, SKIP_COMMIT);
-}
+// if (SID == EDGE_LID_ARRAY.size()) { 
+// 	order_j = 1;
+// 	for (i in RAND_ARRAY) {
+//        execute_query(g,EDGE_LID_ARRAY[i],i,order_j,DATABASE,DATASET,QUERY,ITERATION,EDGE_ARRAY,SID,PROPERTY_NAME, SKIP_COMMIT);
+//        order_j++;
+// 	}
+// } else {
+// 	execute_query(g,EDGE_LID_ARRAY[SID],SID,0,DATABASE,DATASET,QUERY,ITERATION,EDGE_ARRAY,SID,PROPERTY_NAME, SKIP_COMMIT);
+// }
+v = g.V(allIds[rand.nextInt() % allIds.size()]);
+e = v.outE().next();
+e.property(PROPERTY_NAME,PROPERTY_NAME);
+execute_query(g,e.id(),SID,0,DATABASE,DATASET,QUERY,ITERATION,EDGE_ARRAY,SID,PROPERTY_NAME,SKIP_COMMIT);
+
 
 //g.shutdown();
