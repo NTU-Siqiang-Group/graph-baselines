@@ -28,7 +28,7 @@ This repository provides the tools and instructions to reproduce the experimenta
 All experiments are conducted using Docker for consistency and portability. Please ensure Docker is installed and running on your machine.
 
 ```bash
-./build_images.sh
+./build_image.sh
 ```
 
 ## Step2: Set Up the Python Environment
