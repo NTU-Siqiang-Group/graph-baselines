@@ -62,3 +62,4 @@ images/libs/janusgraph-1.0.0.zip
 */janusdata.zip
 *allid.txt
 *.mapping
+*.dat

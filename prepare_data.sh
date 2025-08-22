@@ -28,17 +28,20 @@ EOF
   -e JAVA_OPTIONS="-Xms1G -Xmn128M -Xmx100G" \
   -e METAPATH=$metapath \
   -e ALLIDPATH=$allidpath \
+  -e DBNAME=$db_name \
+  -e GRAPHNAME=$dataset \
   -s runtime/data/tmp.json \
   -d > tmp.log 2>&1
 
   python3 stats.py --path=runtime/debug.log -w $alg
 }
 
-targets=(gremlin-orientdb)
-# targets=(gremlin-neo4j-tp3 gremlin-arangodb gremlin-pg gremlin-orientdb gremlin-janusgraph)
+# targets=(gremlin-neo4j-tp3)
+targets=(gremlin-neo4j-tp3 gremlin-orientdb gremlin-janusgraph gremlin-arangodb gremlin-pg)
 # datasets=(com-dblp.ungraph.json3 com-orkut.ungraph.json3 ldbc.json2 freebase_large.json2)
 # dataset=com-dblp.ungraph.json3
-dataset=ldbc.json2
+# dataset=ldbc.json2
+dataset=cit-patents.json3
 
 for t in "${targets[@]}"
 do

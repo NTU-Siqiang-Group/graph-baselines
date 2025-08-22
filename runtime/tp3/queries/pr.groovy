@@ -33,6 +33,7 @@ for (int i = 0; i < maxIters; i++) {
     newPrs[allIds[j]] = newRank;
   }
   prs = newPrs;
+  println("Iter ${i} finished");
 }
 exec_time = System.nanoTime() - t;
 println("PR finished in ${exec_time} ns");

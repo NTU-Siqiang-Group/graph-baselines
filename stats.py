@@ -37,7 +37,9 @@ def get_stat_normal(keyword, algm):
           bfs_stat.append(int(ns) / 1000) # convert to us
         line = f.readline()
       bfs_stat = np.array(bfs_stat)
-      return f'{algm} avg: {np.mean(bfs_stat) if len(bfs_stat) > 0 else "nan"}, {algm} std: {np.std(bfs_stat) if len(bfs_stat) > 0 else "nan" }'
+      db_name = path.split('/')[-1].split('_')[0]
+      # return f'{algm} avg: {np.mean(bfs_stat) if len(bfs_stat) > 0 else "nan"}, {algm} std: {np.std(bfs_stat) if len(bfs_stat) > 0 else "nan" }'
+      return f'{db_name},{algm},{np.mean(bfs_stat):.2f}'
   return analyze_stat
 
 def parse_info_line(line):
@@ -205,6 +207,10 @@ properties = {
 commands = {
   'get-and-add.groovy': get_stat_for_get_and_add,
   'bfs.groovy': get_stat_normal('BFS start from ', 'bfs'),
+  'cdlp.groovy': get_stat_normal('CDLP finished ', 'CDLP'),
+  'shortest-path-new.groovy': get_stat_normal('Shortest Path', 'SSSP'),
+  'pr.groovy': get_stat_normal('PR finished', 'PR'),
+  'wcc.groovy': get_stat_normal('WCC finished', 'WCC'),
   'random-walk.groovy': get_stat_normal('Random Walk step:', 'RW'),
   'shortest-path-new.groovy': get_stat_normal('Shortest Path from ', 'SP'),
   'test_all': get_stat_log,
