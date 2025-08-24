@@ -9,6 +9,7 @@ wget --no-check-certificate https://disi.unitn.it/\~brugnara/data/GraphDatabaseC
 wget https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz
 wget https://snap.stanford.edu/data/cit-Patents.txt.gz
 wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz
+wget https://snap.stanford.edu/data/wiki-Talk.txt.gz
 ################################################
 
 echo "Unzip datasets ..."
@@ -35,5 +36,13 @@ tail -n +5 com-orkut.ungraph.txt > com-orkut.ungraph.txt.tmp
 python3 ../../convert_graph.py --input=com-orkut.ungraph.txt.tmp --output=com-orkut.ungraph.json3
 rm com-orkut.ungraph.txt
 rm com-orkut.ungraph.txt.tmp
+
+# wikitalk
+gunzip -c wiki-Talk.txt.gz > wiki-Talk.txt
+sed -i 's/\t/ /g' wiki-Talk.txt
+tail -n +5 wiki-Talk.txt > wiki-Talk.txt.tmp
+python3 ../../convert_graph.py --input=wiki-Talk.txt.tmp --output=wikitalk.json3
+rm wiki-Talk.txt
+rm wiki-Talk.txt.tmp
 
 cd ../..
