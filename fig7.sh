@@ -38,7 +38,23 @@ EOF
 
 # targets=(gremlin-neo4j-tp3)
 targets=(gremlin-neo4j-tp3 gremlin-janusgraph gremlin-arangodb gremlin-orientdb gremlin-pg)
-dataset=com-dblp.ungraph.json3
+#dataset=com-dblp.ungraph.json3
+DATASET_ALIAS="${1:-null}"
+resolve_dataset() {
+  case "$1" in
+    dblp)       echo "com-dblp.ungraph.json3" ;;
+    wikipedia)
+                echo "wikipedia.json3" ;;
+    orkut)      echo "com-orkut.ungraph.json3" ;;
+    twitter)
+                echo "twitter-2010.json3" ;;
+    *)
+      echo "Unknown dataset alias: $1" >&2
+      return 1
+      ;;
+  esac
+}
+dataset="$(resolve_dataset "$DATASET_ALIAS")"
 
 rm fig7.dat # clean result
 echo "db,get_neighbors,add_vertex,add_edge,del_edge" >> fig7.dat

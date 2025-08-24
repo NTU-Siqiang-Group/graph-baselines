@@ -11,6 +11,7 @@ wget https://snap.stanford.edu/data/cit-Patents.txt.gz
 wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz
 wget https://snap.stanford.edu/data/wiki-Talk.txt.gz
 wget http://konect.cc/files/download.tsv.wikipedia_link_fr.tar.bz2
+wget -nc https://snap.stanford.edu/data/twitter-2010.txt.gz
 ################################################
 
 echo "Unzip datasets ..."
@@ -46,11 +47,18 @@ python3 ../../convert_graph.py --input=wiki-Talk.txt.tmp --output=wikitalk.json3
 rm wiki-Talk.txt
 rm wiki-Talk.txt.tmp
 
-# wikipedia
+wikipedia
 tar -xvjf download.tsv.wikipedia_link_fr.tar.bz2 -C ./
 sed -i 's/\t/ /g' wikipedia_link_fr/out.wikipedia_link_fr
 tail -n +2 wikipedia_link_fr/out.wikipedia_link_fr > wikipedia.txt
 python3 ../../convert_graph.py --input=wikipedia.txt --output=wikipedia.json3
 rm wikipedia.txt
+
+#twitter
+set -euo pipefail
+clean_stream() {
+  sed -E '/^[[:space:]]*[#%]/d; s/\t/ /g; s/^[[:space:]]+//; s/[[:space:]]+$//; s/[[:space:]]+/ /g'
+}
+gzip -cd twitter-2010.txt.gz | clean_stream > twitter-2010.json3
 
 cd ../..
