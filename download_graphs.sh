@@ -10,6 +10,7 @@ wget https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz
 wget https://snap.stanford.edu/data/cit-Patents.txt.gz
 wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz
 wget https://snap.stanford.edu/data/wiki-Talk.txt.gz
+wget http://konect.cc/files/download.tsv.wikipedia_link_fr.tar.bz2
 ################################################
 
 echo "Unzip datasets ..."
@@ -44,5 +45,12 @@ tail -n +5 wiki-Talk.txt > wiki-Talk.txt.tmp
 python3 ../../convert_graph.py --input=wiki-Talk.txt.tmp --output=wikitalk.json3
 rm wiki-Talk.txt
 rm wiki-Talk.txt.tmp
+
+# wikipedia
+tar -xvjf download.tsv.wikipedia_link_fr.tar.bz2 -C ./
+sed -i 's/\t/ /g' wikipedia_link_fr/out.wikipedia_link_fr
+tail -n +2 wikipedia_link_fr/out.wikipedia_link_fr > wikipedia.txt
+python3 ../../convert_graph.py --input=wikipedia.txt --output=wikipedia.json3
+rm wikipedia.txt
 
 cd ../..
