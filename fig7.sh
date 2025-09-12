@@ -48,6 +48,7 @@ resolve_dataset() {
     orkut)      echo "com-orkut.ungraph.json3" ;;
     twitter)
                 echo "twitter-2010.json3" ;;
+    twitch)     echo "twitch.json3" ;;
     *)
       echo "Unknown dataset alias: $1" >&2
       return 1

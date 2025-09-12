@@ -58,6 +58,18 @@ EOF
 targets=(gremlin-neo4j-tp3 gremlin-orientdb gremlin-janusgraph gremlin-arangodb gremlin-pg)
 # datasets=(com-dblp.ungraph.json3 com-orkut.ungraph.json3 ldbc.json2 freebase_large.json2)
 dataset=cit-patents.json3
+DATASET_ALIAS="${1:-null}"
+resolve_dataset() {
+  case "$1" in
+    cit-patents)       echo "cit-patents.json3" ;;
+    wiki-talk)         echo "wikitalk.json3" ;;
+    *)
+      echo "Unknown dataset alias: $1" >&2
+      return 1
+      ;;
+  esac
+}
+dataset="$(resolve_dataset "$DATASET_ALIAS")"
 algms=(pr.groovy cdlp.groovy wcc.groovy shortest-path-new.groovy bfs.groovy)
 
 for alg in "${algms[@]}"

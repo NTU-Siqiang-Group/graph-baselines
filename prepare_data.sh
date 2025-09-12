@@ -55,6 +55,8 @@ resolve_dataset() {
     ldbc)       echo "ldbc.json2" ;;
     freebase)
                 echo "freebase_large.json2" ;;
+    cit-patents)       echo "cit-patents.json3" ;;
+    wiki-talk)         echo "wikitalk.json3" ;;
     *)
       echo "Unknown dataset alias: $1" >&2
       return 1
