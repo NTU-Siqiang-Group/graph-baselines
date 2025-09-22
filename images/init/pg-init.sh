@@ -83,7 +83,8 @@ if [[ "${QUERY}" == *loader.groovy ]] && [[ -z ${NOHASH+x} ]]; then
    echo "PG (hashing labels for) loading $DATASET" | tee -a ${RUNTIME_DIR}/errors.log
 
    DATASET_NAME=$(basename "${DATASET}")
-   SAFE_DATASET="/tmp/${DATASET_NAME}_hashed"
+  #  SAFE_DATASET="/tmp/${DATASET_NAME}_hashed"
+    SAFE_DATASET="/tmp/${DATASET_NAME}"
 
    # Checks
    # ls -lh $DATASET | tee -a ${RUNTIME_DIR}/errors
