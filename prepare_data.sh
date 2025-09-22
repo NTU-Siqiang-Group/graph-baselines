@@ -57,6 +57,7 @@ resolve_dataset() {
                 echo "freebase_large.json2" ;;
     cit-patents)       echo "cit-patents.json3" ;;
     wiki-talk)         echo "wikitalk.json3" ;;
+    twitch)     echo "twitch.json3" ;;
     *)
       echo "Unknown dataset alias: $1" >&2
       return 1
