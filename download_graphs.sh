@@ -10,7 +10,8 @@ wget https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz
 wget https://snap.stanford.edu/data/cit-Patents.txt.gz
 wget https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz
 wget https://snap.stanford.edu/data/wiki-Talk.txt.gz
-wget http://konect.cc/files/download.tsv.wikipedia_link_fr.tar.bz2
+#wget http://konect.cc/files/download.tsv.wikipedia_link_fr.tar.bz2
+wget https://github.com/volatill/konect_wikipedia_dataset/releases/download/file/download.tsv.wikipedia_link_fr.1.tar.bz2
 wget https://snap.stanford.edu/data/twitch_gamers.zip
 wget -nc https://snap.stanford.edu/data/twitter-2010.txt.gz
 ################################################
@@ -49,7 +50,7 @@ rm wiki-Talk.txt
 rm wiki-Talk.txt.tmp
 
 # wikipedia
-tar -xvjf download.tsv.wikipedia_link_fr.tar.bz2 -C ./
+tar -xvjf download.tsv.wikipedia_link_fr.1.tar.bz2 -C ./
 sed -i 's/\t/ /g' wikipedia_link_fr/out.wikipedia_link_fr
 tail -n +2 wikipedia_link_fr/out.wikipedia_link_fr > wikipedia.txt
 python3 ../../convert_graph.py --input=wikipedia.txt --output=wikipedia.json3
